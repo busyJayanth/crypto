@@ -1,0 +1,22 @@
+<!-- templates/chat.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" href="static\style.css">
+</head>
+<body>
+    <h1>Chat Room</h1>
+    <p>Welcome, {{ username }}!</p>
+    <form method="POST">
+        <input type="text" name="message" placeholder="Type your message..." required>
+        <button type="submit">Send</button>
+    </form>
+    <div>
+        {% for chat_message in chat_messages %}
+            <p>{{ chat_message["username"] }}: {{ chat_message["message"] }}</p>
+        {% endfor %}
+    </div>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>
