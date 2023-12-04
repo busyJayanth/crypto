@@ -70,12 +70,27 @@ def chat():
         message = request.form.get("message")
         username = session["username"]
 
-        # Save the message to the database.
-        messages.insert_one({"username": username, "message": message})
+        # Encrypt the message before saving it to the database.
+        try:
+            encrypted_message = cipher_suite.encrypt(message.encode())
+            messages.insert_one({"username": username, "message": encrypted_message})
+        except Exception as e:
+            print(f"Error encrypting and saving message: {e}")
 
     chat_messages = messages.find()
-    return render_template("chat.html", chat_messages=chat_messages)
+
+    # Decrypt chat messages before passing them to the template.
+    decrypted_messages = []
+    for message in chat_messages:
+        try:
+            decrypted_message = cipher_suite.decrypt(message["message"]).decode()
+            decrypted_messages.append({"username": message["username"], "message": decrypted_message})
+        except Exception as e:
+            print(f"Error decrypting message: {e}")
+
+    return render_template("chat.html", chat_messages=decrypted_messages)
+
 
 
 if __name__ == "__main__":
-    app.run(debug=False,host='0.0.0.0',port=5090)
+    app.run(debug=False, host='0.0.0.0', port=5090)
